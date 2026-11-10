@@ -16,14 +16,13 @@
     .align  2
 op1_asm:
     li      t0, 0
-.Lop1_loop:
     beqz    a1, .Lop1_done
+.Lop1_loop:
     and     t1, a0, a1
-    slli    t1, t1, 1
     xor     a0, a0, a1
-    mv      a1, t1
+    slli    a1, t1, 1
     addi    t0, t0, 1
-    j       .Lop1_loop
+    bnez    a1, .Lop1_loop
 .Lop1_done:
     sw      t0, 0(a2)
     ret
@@ -69,13 +68,12 @@ q_mul_asm:
     li      t4, 0                   # shifted high word
 
     # Unsigned 32-by-32 shift-and-add multiplication into t3:t2.
-.Lqmul_loop:
     beqz    t1, .Lqmul_signed
+.Lqmul_loop:
     andi    t5, t1, 1
     beqz    t5, .Lqmul_shift
-    mv      a2, t2
     add     t2, t2, t0
-    sltu    a2, t2, a2
+    sltu    a2, t2, t0
     add     t3, t3, t4
     add     t3, t3, a2
 .Lqmul_shift:
@@ -84,7 +82,7 @@ q_mul_asm:
     or      t4, t4, a2
     slli    t0, t0, 1
     srli    t1, t1, 1
-    j       .Lqmul_loop
+    bnez    t1, .Lqmul_loop
 
     # Apply the sign to the full 64-bit product.
 .Lqmul_signed:
